@@ -66,11 +66,11 @@ function export_overlap_statistics()
 
     exec_NT = parse(Int, get(ENV, "PCM_WINDOW_HOURS", "24"))
     N_sets = parse(Int, get(ENV, "PCM_INTERVALS", "7"))
-    required_horizon = exec_NT * N_sets
-    alpha = 0.25
-    epsilon = 0.10
     min_overlap = 2
     max_overlap = 12
+    required_horizon = exec_NT * N_sets + max_overlap
+    alpha = 0.25
+    epsilon = 0.10
     training_mode = lowercase(strip(get(ENV, "PCM_TRAINING_MODE", "sweep")))
     slow_threshold = 4.0
     # regression/neural_network 会执行离线标定；ml_prediction 使用已保存数据集
@@ -194,7 +194,7 @@ function export_overlap_statistics()
         println(io, @sprintf("Decay Factor (alpha)       : %.2f", alpha))
         println(io, @sprintf("Decay Threshold (epsilon)  : %.2f", epsilon))
         println(io, @sprintf("Calibration Time Excluded  : %.2f seconds", calibration_time_excluded))
-        println(io, @sprintf("Slow-Start Generators      : %d units (dwell req: %dh)", length(slow_units), T_unit_req))
+        println(io, @sprintf("Slow-Start Generators      : %d units (max static min_up/down param: %dh)", length(slow_units), T_unit_req))
         println(io, @sprintf("Steady-State Decay Window  : %d hours", T_steady_req))
         println(io, @sprintf("Average Overlap Window     : %.2f hours", mean(df_stats.Final_Adaptive_Overlap_h)))
         println(io, @sprintf("Max Overlap Window         : %d hours", maximum(df_stats.Final_Adaptive_Overlap_h)))
